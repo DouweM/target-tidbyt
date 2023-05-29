@@ -1,0 +1,23 @@
+version: 1
+send_anonymous_usage_stats: true
+project_id: "target-tidbyt"
+default_environment: test
+environments:
+- name: test
+plugins:
+  extractors: []
+  loaders:
+  - name: "target-tidbyt"
+    namespace: "target_tidbyt"
+    pip_url: -e .
+    capabilities:
+    - about
+    - stream-maps
+    - record-flattening
+    config:
+      token: $TIDBYT_TOKEN
+      device_id: $TIDBYT_DEVICE
+    settings:
+    - name: token
+      kind: password
+    - name: device_id
