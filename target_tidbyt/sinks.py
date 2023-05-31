@@ -30,6 +30,8 @@ class TidbytSink(RecordSink):
         device_id = self._config.get("device_id")
 
         installation_id = record.get("installation_id")
+        if installation_id:
+            installation_id = installation_id.replace("-", "") # Must be alphanumeric
         background = record.get("background", True)
 
         payload = {
@@ -47,4 +49,4 @@ class TidbytSink(RecordSink):
                 "Authorization": "Bearer %s" % token,
             }
         )
-        self.logger.info("Response: %s" % response)
+        self.logger.info("Response: %s" % response.text)
