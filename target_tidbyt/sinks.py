@@ -34,19 +34,33 @@ class TidbytSink(RecordSink):
             installation_id = installation_id.replace("-", "") # Must be alphanumeric
         background = record.get("background", True)
 
-        payload = {
-            "image": image_data,
-            "installationID": installation_id,
-            "background": background
-        }
-
-        self.logger.info("Pushing image to Tidbyt device", device_id, payload)
-
-        response = requests.post(
-            "https://api.tidbyt.com/v0/devices/%s/push" % device_id,
-            json=payload,
-            headers={
-                "Authorization": "Bearer %s" % token,
+        if image_data:
+            payload = {
+                "image": image_data,
+                "installationID": installation_id,
+                "background": background
             }
-        )
-        self.logger.info("Response: %s" % response.text)
+
+            self.logger.info("Pushing image to Tidbyt device", device_id, payload)
+
+            response = requests.post(
+                "https://api.tidbyt.com/v0/devices/%s/push" % device_id,
+                json=payload,
+                headers={
+                    "Authorization": "Bearer %s" % token,
+                }
+            )
+            self.logger.info("Response: %s" % response.text)
+        elif installation_id:
+            self.logger.info("Deleting installation from Tidbyt device", device_id, installation_id)
+
+            response = requests.delete(
+                "https://api.tidbyt.com/v0/devices/%s/installations/%s" % (device_id, installation_id),
+                headers={
+                    "Authorization": "Bearer %s" % token,
+                }
+            )
+            self.logger.info("Response", response, response.text)
+        else:
+            self.logger.info("No image data or installation ID found in record")
+
