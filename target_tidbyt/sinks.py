@@ -61,10 +61,10 @@ class TidbytSink(RecordSink):
                     "Authorization": "Bearer %s" % token,
                 }
             )
-            self.logger.info("Response", response, response.text)
             if response.status_code == 500 and response.json().get('message') == 'installation not found':
                 self.logger.info("Installation not found, skipping")
             else:
+                self.logger.info("Response: %s", response.text)
                 response.raise_for_status()
         else:
             self.logger.info("No image data or installation ID found in record")
