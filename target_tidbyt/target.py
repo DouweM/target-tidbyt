@@ -25,8 +25,17 @@ class TargetTidbyt(Target):
             "token",
             th.StringType,
             description="Tidbyt API token",
+        ),
+        th.Property(
+            "devices_path",
+            th.StringType,
+            description="Path to devices.yml defining devices with name, id, and token.",
+        ),
+        th.Property(
+            "devices_names",
+            th.ArrayType(th.StringType),
+            description="Only send to these named devices. If not set, send to all devices.",
         )
-        # TODO: Add devices, device_names
     ).to_dict()
 
     default_sink_class = TidbytSink

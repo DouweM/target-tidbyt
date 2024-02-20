@@ -1,4 +1,8 @@
 from __future__ import annotations
+import os
+from pathlib import Path
+
+import yaml
 
 """tidbyt target sink class, which handles writing streams."""
 
@@ -24,15 +28,7 @@ class TidbytSink(RecordSink):
         if "image_data" not in record:
             raise ValueError("No image data found in record")
 
-        devices = self._config.get("devices")
-        if not devices:
-            devices = [
-                {
-                    "name": "default",
-                    "id": self._config.get("device_id"),
-                    "token": self._config.get("token")
-                }
-            ]
+        devices = self.get_devices()
 
         device_names = self._config.get("device_names")
         if device_names:
@@ -40,6 +36,44 @@ class TidbytSink(RecordSink):
 
         for device in devices:
             self.send_to_tidbyt(record, device)
+
+    def get_devices_from_file(self):
+        devices_path_raw = self._config.get("devices_path")
+        if not devices_path_raw:
+            return []
+
+        devices_path = Path(devices_path_raw)
+        if not devices_path.exists():
+            return []
+
+        devices_config = yaml.safe_load(devices_path.read_text())
+
+        if isinstance(devices_config, list):
+            devices_config = {"devices": devices_config}
+        devices = devices_config.get("devices") or []
+
+        def expand_env_var(value):
+            if isinstance(value, str) and value.startswith("$"):
+                return os.getenv(value[1:])
+            return value
+
+        return [
+            {
+                "name": device.get("name"),
+                "id": expand_env_var(device.get("id")),
+                "token": expand_env_var(device.get("token")),
+            }
+            for device in devices
+        ]
+
+    def get_devices(self):
+        return self.get_devices_from_file() or [
+            {
+                "name": "default",
+                "id": self._config.get("device_id"),
+                "token": self._config.get("token")
+            }
+        ]
 
     def send_to_tidbyt(self, record, device):
         image_data = record.get("image_data", "")
