@@ -17,15 +17,16 @@ class TargetTidbyt(Target):
 
     config_jsonschema = th.PropertiesList(
         th.Property(
-            "token",
-            th.StringType,
-            description="Tidbyt API token",
-        ),
-        th.Property(
             "device_id",
             th.StringType,
             description="Tidbyt device ID",
+        ),
+        th.Property(
+            "token",
+            th.StringType,
+            description="Tidbyt API token",
         )
+        # TODO: Add devices, device_names
     ).to_dict()
 
     default_sink_class = TidbytSink
