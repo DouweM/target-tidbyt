@@ -17,14 +17,24 @@ class TargetTidbyt(Target):
 
     config_jsonschema = th.PropertiesList(
         th.Property(
+            "device_id",
+            th.StringType,
+            description="Tidbyt device ID",
+        ),
+        th.Property(
             "token",
             th.StringType,
             description="Tidbyt API token",
         ),
         th.Property(
-            "device_id",
+            "devices_path",
             th.StringType,
-            description="Tidbyt device ID",
+            description="Path to devices.yml defining devices with name, id, and token.",
+        ),
+        th.Property(
+            "device_names",
+            th.ArrayType(th.StringType),
+            description="Only send to these named devices. If not set, send to all devices.",
         )
     ).to_dict()
 
