@@ -32,7 +32,7 @@ class TargetTidbyt(Target):
             description="Path to devices.yml defining devices with name, id, and token.",
         ),
         th.Property(
-            "devices_names",
+            "device_names",
             th.ArrayType(th.StringType),
             description="Only send to these named devices. If not set, send to all devices.",
         )
