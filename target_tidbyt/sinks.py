@@ -61,7 +61,7 @@ class TidbytSink(RecordSink):
             {
                 "name": device.get("name"),
                 "id": expand_env_var(device.get("id")),
-                "token": expand_env_var(device.get("token")),
+                "key": expand_env_var(device.get("key")),
             }
             for device in devices
         ]
@@ -71,7 +71,7 @@ class TidbytSink(RecordSink):
             {
                 "name": "default",
                 "id": self._config.get("device_id"),
-                "token": self._config.get("token")
+                "key": self._config.get("token") or self._config.get("key")
             }
         ]
 
@@ -80,7 +80,7 @@ class TidbytSink(RecordSink):
 
         device_name = device.get("name")
         device_id = device.get("id")
-        token = device.get("token")
+        key = device.get("key")
 
         installation_id = record.get("installation_id")
         if installation_id:
@@ -100,7 +100,7 @@ class TidbytSink(RecordSink):
                 "https://api.tidbyt.com/v0/devices/%s/push" % device_id,
                 json=payload,
                 headers={
-                    "Authorization": "Bearer %s" % token,
+                    "Authorization": "Bearer %s" % key,
                 }
             )
             self.logger.info("Response: %s", response.text)
@@ -111,7 +111,7 @@ class TidbytSink(RecordSink):
             response = requests.delete(
                 "https://api.tidbyt.com/v0/devices/%s/installations/%s" % (device_id, installation_id),
                 headers={
-                    "Authorization": "Bearer %s" % token,
+                    "Authorization": "Bearer %s" % key,
                 }
             )
             if response.status_code == 500 and response.json().get('message') == 'installation not found':

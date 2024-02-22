@@ -17,9 +17,9 @@ plugins:
     settings:
     - name: device_id
       value: $TIDBYT_DEVICE_ID
-    - name: token
+    - name: key
       kind: password
-      value: $TIDBYT_TOKEN
+      value: $TIDBYT_KEY
 
     - name: devices_path
       value: $MELTANO_PROJECT_ROOT/devices.yml
